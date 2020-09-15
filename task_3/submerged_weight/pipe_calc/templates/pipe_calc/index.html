@@ -1,0 +1,505 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Submerged Weight Pipe Calculation</title>
+        <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossorigin="anonymous"
+        />
+        <link rel="stylesheet" href="{% static 'pipe_calc/style.css' %}" />
+        <script
+            src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"
+        ></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="{% url 'pipe_calc:index' %}">IDARE</a>
+        </nav>
+        <div class="container">
+            <h2 class="text-center">Submerged Weight Pipe Calculation</h2>
+
+            <h3 class="text-center">Input Values</h3>
+            <form>
+                <h4 class="mb-3">Pipe Data</h4>
+                <div class="form-group row">
+                    <label for="pipe-od" class="col-sm-6 col-form-label"
+                        >Outside Diameter</label
+                    >
+                    <div class="input-group col-sm-6">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="pipe-od"
+                            name="pipe-od"
+                            value="{{ input_values.pipe_od }}"
+                            required
+                        />
+                        <div class="input-group-append">
+                            <span class="input-group-text">in</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="pipe-wt" class="col-sm-6 col-form-label"
+                        >Wall Thickness</label
+                    >
+                    <div class="input-group col-sm-6">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="pipe-wt"
+                            name="pipe-wt"
+                            value="{{ input_values.pipe_wt }}"
+                            required
+                        />
+                        <div class="input-group-append">
+                            <span class="input-group-text">in</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="pipe-d" class="col-sm-6 col-form-label"
+                        >Density</label
+                    >
+                    <div class="input-group col-sm-6">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="pipe-d"
+                            name="pipe-d"
+                            value="{{ input_values.pipe_d }}"
+                            required
+                        />
+                        <div class="input-group-append">
+                            <span class="input-group-text"
+                                >lb/ft<sup>3</sup></span
+                            >
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="pipe-ca" class="col-sm-6 col-form-label"
+                        >Corrosion Allowance</label
+                    >
+                    <div class="input-group col-sm-6">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="pipe-ca"
+                            name="pipe-ca"
+                            value="{{ input_values.pipe_ca }}"
+                            required
+                        />
+                        <div class="input-group-append">
+                            <span class="input-group-text">in</span>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="my-3">External Coating Data</h4>
+                <div class="row">
+                    <div class="form-control col-sm-3">
+                        <label for="coating-no">Coating No</label>
+                        <input
+                            readonly
+                            type="text"
+                            name="coating-no"
+                            id="coating-no"
+                            class="form-control"
+                            value="{{ input_values.coating_no }}"
+                        />
+                    </div>
+                    <div class="form-control col-sm-3">
+                        <label for="coating-desc">Description</label>
+                        <input
+                            readonly
+                            type="text"
+                            name="coating-desc"
+                            id="coating-desc"
+                            class="form-control"
+                            value="{{ input_values.coating_desc }}"
+                        />
+                    </div>
+                    <div class="form-control col-sm-3">
+                        <label for="coating-t">Thickness</label>
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="coating-t"
+                                name="coating-t"
+                                value="{{ input_values.coating_t }}"
+                                required
+                            />
+                            <div class="input-group-append">
+                                <span class="input-group-text">in</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-control col-sm-3">
+                        <label for="coating-d">Density</label>
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="coating-d"
+                                name="coating-d"
+                                value="{{ input_values.coating_d }}"
+                                required
+                            />
+                            <div class="input-group-append">
+                                <span class="input-group-text"
+                                    >lb/ft<sup>3</sup></span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="my-3">Pipe Contents Data</h4>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-lg"
+                        >Description</label
+                    >
+                    <label class="col-sm-4 col-form-label col-form-label-lg"
+                        >Contents</label
+                    >
+                    <label class="col-sm-4 col-form-label col-form-label-lg"
+                        >Density</label
+                    >
+                </div>
+
+                <div class="form-group row">
+                    <label for="contents-a" class="col-sm-4 col-form-label"
+                        >Installation Empty</label
+                    >
+                    <label for="contents-a-d" class="col-sm-4 col-form-label"
+                        >Air</label
+                    >
+                    <div class="input-group col-sm-4">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="contents-a-d"
+                            name="contents-a-d"
+                            value="{{ input_values.contents_a_d }}"
+                            required
+                        />
+                        <div class="input-group-append">
+                            <span class="input-group-text"
+                                >lb/ft<sup>3</sup></span
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="contents-w" class="col-sm-4 col-form-label"
+                        >Flooded</label
+                    >
+                    <label for="contents-w-d" class="col-sm-4 col-form-label"
+                        >Water</label
+                    >
+                    <div class="input-group col-sm-4">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="contents-w-d"
+                            name="contents-w-d"
+                            value="{{ input_values.contents_w_d }}"
+                            required
+                        />
+                        <div class="input-group-append">
+                            <span class="input-group-text"
+                                >lb/ft<sup>3</sup></span
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="contents-sw" class="col-sm-4 col-form-label"
+                        >Hydrotest</label
+                    >
+                    <label for="contents-sw-d" class="col-sm-4 col-form-label"
+                        >Sea Water</label
+                    >
+                    <div class="input-group col-sm-4">
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="contents-sw-d"
+                            name="contents-sw-d"
+                            value="{{ input_values.contents_sw_d }}"
+                            required
+                        />
+                        <div class="input-group-append">
+                            <span class="input-group-text"
+                                >lb/ft<sup>3</sup></span
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col-sm-12">
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                            name="submit"
+                        >
+                            Calculate
+                        </button>
+                    </div>
+                </div>
+                {% if error_message %}
+                <div
+                    class="alert alert-warning alert-dismissible fade show"
+                    role="alert"
+                >
+                    <strong>{{error_message.strong}}</strong>
+                    {{error_message.description}}.
+                    <button
+                        type="button"
+                        class="close"
+                        data-dismiss="alert"
+                        aria-label="Close"
+                    >
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </form>
+
+            {% endif %} {% if output_values %}
+            <h3 class="text-center">Output Values</h3>
+            <h4 class="my-3">Calculation Details</h4>
+            <div class="form-group row">
+                <label for="details-r1" class="col-sm-6 col-form-label"
+                    >Pipe Inside Radius (r1)</label
+                >
+                <div class="input-group col-sm-6">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="details-r1"
+                        name="details-r1"
+                        value="{{ output_values.details_r1 }}"
+                        readonly
+                    />
+                    <div class="input-group-append">
+                        <span class="input-group-text">in</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="details-r2" class="col-sm-6 col-form-label"
+                    >Pipe Outside Radius (r2)</label
+                >
+                <div class="input-group col-sm-6">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="details-r2"
+                        name="details-r2"
+                        value="{{ output_values.details_r2 }}"
+                        readonly
+                    />
+                    <div class="input-group-append">
+                        <span class="input-group-text">in</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="details-r3" class="col-sm-6 col-form-label"
+                    >Outer Radius of Coating (r3)</label
+                >
+                <div class="input-group col-sm-6">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="details-r3"
+                        name="details-r3"
+                        value="{{ output_values.details_r3 }}"
+                        readonly
+                    />
+                    <div class="input-group-append">
+                        <span class="input-group-text">in</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="details-rt" class="col-sm-6 col-form-label"
+                    >Total Pipeline Outside Diameter</label
+                >
+                <div class="input-group col-sm-6">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="details-rt"
+                        name="details-rt"
+                        value="{{ output_values.details_rt }}"
+                        readonly
+                    />
+                    <div class="input-group-append">
+                        <span class="input-group-text">in</span>
+                    </div>
+                </div>
+            </div>
+            <h4 class="my-3">Dry Unit Weight</h4>
+            <div class="form-group row">
+                <label for="dry-wt-pipe" class="col-sm-6 col-form-label"
+                    >Pipe Weight per Unit Length in Air</label
+                >
+                <div class="input-group col-sm-6">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="dry-wt-pipe"
+                        name="dry-wt-pipe"
+                        value="{{ output_values.dry_wt_pipe }}"
+                        readonly
+                    />
+                    <div class="input-group-append">
+                        <span class="input-group-text">lb/ft</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="dry-wt-coating" class="col-sm-6 col-form-label"
+                    >Coating Weight per Unit Length in Air</label
+                >
+                <div class="input-group col-sm-6">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="dry-wt-coating"
+                        name="dry-wt-coating"
+                        value="{{ output_values.dry_wt_coating }}"
+                        readonly
+                    />
+                    <div class="input-group-append">
+                        <span class="input-group-text">lb/ft</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="dry-wt-contents" class="col-sm-6 col-form-label"
+                    >Contents Weight per Unit Length in Air</label
+                >
+                <div class="input-group col-sm-6">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="dry-wt-contents"
+                        name="dry-wt-contents"
+                        value="{{ output_values.dry_wt_contents }}"
+                        readonly
+                    />
+                    <div class="input-group-append">
+                        <span class="input-group-text">lb/ft</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="dry-wt-total" class="col-sm-6 col-form-label"
+                    >Total Weight per Unit Length in Air</label
+                >
+                <div class="input-group col-sm-6">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="dry-wt-total"
+                        name="dry-wt-total"
+                        value="{{ output_values.dry_wt_total }}"
+                        readonly
+                    />
+                    <div class="input-group-append">
+                        <span class="input-group-text">lb/ft</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="dry-buoyant-fc" class="col-sm-6 col-form-label"
+                    >Buoyant Force per Unit Length</label
+                >
+                <div class="input-group col-sm-6">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="dry-buoyant-fc"
+                        name="dry-buoyant-fc"
+                        value="{{ output_values.dry_buoyant_fc }}"
+                        readonly
+                    />
+                    <div class="input-group-append">
+                        <span class="input-group-text">lb/ft</span>
+                    </div>
+                </div>
+            </div>
+            <h4 class="my-3">Summary of Submerged Weight</h4>
+            <div class="form-group row">
+                <label for="summary-sub-wt" class="col-sm-6 col-form-label"
+                    >Submerged Weight per Unit Length</label
+                >
+                <div class="input-group col-sm-6">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="summary-sub-wt"
+                        name="summary-sub-wt"
+                        value="{{ output_values.summary_sub_wt }}"
+                        readonly
+                    />
+                    <div class="input-group-append">
+                        <span class="input-group-text">lb/ft</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label
+                    for="summary-sub-spec-gravity"
+                    class="col-sm-6 col-form-label"
+                    >Submerged Specific Gravity w.r.t S.W</label
+                >
+                <div class="col-sm-6">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="summary-sub-spec-gravity"
+                        name="summary-sub-spec-gravity"
+                        value="{{ output_values.summary_sub_spec_gravity }}"
+                        readonly
+                    />
+                </div>
+            </div>
+            {% endif %}
+
+            <footer class="page-footer font-small dark pt-4">
+                <!-- Copyright -->
+                <div class="footer-copyright text-center py-3">
+                    © 2020 Copyright, Raihanul Islam Refat:
+                    <a href="mailto://refat0167@gmail.com"
+                        >refat0167@gmail.com</a
+                    >
+                </div>
+                <!-- Copyright -->
+            </footer>
+            <!-- Footer -->
+        </div>
+    </body>
+</html>
